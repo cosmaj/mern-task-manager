@@ -6,4 +6,7 @@ router.post('/', createTask)
 router.get('/:id', getSingleTask)
 router.delete('/', deleteAllTasks)
 router.delete('/:id', deleteSingleTask)
-router.patch('/:id', updateSingleTask)
+router.put('/:id', updateSingleTask)
+router.all('*', (req, res)=>res.status(400).json(`Bad request!`))
+
+module.exports = router
