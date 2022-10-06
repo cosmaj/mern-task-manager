@@ -1,7 +1,7 @@
 import React from 'react';
 
 const getTasks = () => {
-    console.log(`All tasks requested`)
+    // console.log(`All tasks requested`)
 }
 
 const Header = () =>{
