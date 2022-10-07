@@ -1,24 +1,31 @@
+import axios from 'axios';
 import React, { useState } from 'react';
 
 const CreateTask = () => {
     let [taskCount, taskCountIncrement, taskCountDecrement] = useState(0)
-    let [taskCompletion, checkTaskCompletion] = useState(false)
     let [taskNameError, setTaskNameError] = useState(false)
     let [taskDurationError, setTaskDurationError] = useState(false)
     
     taskCountIncrement = ()=>{
+        taskNameError = false;
+        taskDurationError = false;
         let taskName = document.getElementById('taskName');
         let taskDuration = document.getElementById('duration');
-        checkTaskCompletion();
-        if (document.getElementById('completion').checked) {
-            taskCompletion = true
-            console.log('Task completed')
-        }
-        if (taskName.value.trim().length < 3) setTaskNameError()
-        if ( taskDuration.value < 0) setTaskDurationError()
         
-        if(taskNameError != false || taskDurationError != false) return console.log(`Errors found`)
-        console.log('No errror found')
+        if (taskName.value.trim().length < 3) setTaskNameError()
+        if (!isNaN(taskName.value)) setTaskNameError()
+        if ( (taskDuration.value < 0) || (taskDuration.value.trim().length < 1)) setTaskDurationError()
+        
+        if(taskNameError !== false || taskDurationError !== false) {
+            console.log(`Errors found`)
+        } else{
+            let newTask = {
+                "description": taskName.value.trim(),
+                "duration": taskDuration.value.trim(),
+                "completed": (document.getElementById('completion').checked ? true : false)
+            }
+            createNewTask(newTask)
+        }
     }
 
     taskCountDecrement = ()=>{
@@ -35,6 +42,14 @@ const CreateTask = () => {
         taskDurationError = 'Task Duration should be greater than or equal to 0';
     }
 
+    const createNewTask = async(newTask)=>{
+        try {
+            let task = await axios.post('http://localhost:8080/api/v1/tasks', newTask)
+            console.log(task)
+        } catch (error) {
+            console.log(`Something went wrong`)
+        }
+    }
     return (
         <div className='container my-3 p-3'>
             <h3>Task Tracker Records</h3>
