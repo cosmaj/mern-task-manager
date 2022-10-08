@@ -24,4 +24,4 @@ yarn-error.log*
 
 #ServerConfig
 /server/.env
-/server/node_modules
+#/server/node_modules
