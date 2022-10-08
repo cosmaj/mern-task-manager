@@ -34,12 +34,12 @@ const createTask = async (req, res) => {
 const updateSingleTask = async (req, res) => {
     try {
         let taskID = req.params.id
-        let { username, description, duration, completed } = req.body
+        let { description, duration, completed } = req.body
         let task = await Task.findByIdAndUpdate(taskID, 
             {
                 $set: 
                 {
-                    username:username,
+                    // username:username,
                     description:description, 
                     duration:duration,
                     completed: completed

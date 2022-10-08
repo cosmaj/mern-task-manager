@@ -5,6 +5,7 @@ const CreateTask = () => {
     let [taskCount, taskCountIncrement, taskCountDecrement] = useState(0)
     let [taskNameError, setTaskNameError] = useState(false)
     let [taskDurationError, setTaskDurationError] = useState(false)
+    let [taskMessage, setTaskMessage] = useState(false)
     
     taskCountIncrement = ()=>{
         taskNameError = false;
@@ -21,7 +22,7 @@ const CreateTask = () => {
         } else{
             let newTask = {
                 "description": taskName.value.trim(),
-                "duration": taskDuration.value.trim(),
+                "duration": parseInt(taskDuration.value.trim()),
                 "completed": (document.getElementById('completion').checked ? true : false)
             }
             createNewTask(newTask)
@@ -44,20 +45,55 @@ const CreateTask = () => {
 
     const createNewTask = async(newTask)=>{
         try {
-            let task = await axios.post('http://localhost:8080/api/v1/tasks', newTask)
+            let task = await axios.post('http://localhost:8000/api/v1/tasks', newTask)
+            formReset()
+            setTaskMessage(true)
             console.log(task)
         } catch (error) {
-            console.log(`Something went wrong`)
+            setTaskMessage('Something went wrong')
         }
     }
+
+    const formReset = () => {
+        document.getElementById('taskForm').reset()
+        document.getElementById('taskName').focus()
+    }
+    
+    setTaskMessage = (val) => {
+        taskMessage = val
+    }
+
+    const SuccessMessage = (props) => {
+        return (
+            <>
+                <div className='alert alert-success alert-dismissible'>
+                    <button type='button' className='btn-close' data-bs-dismiss='alert'></button>
+                    Task created successfully!
+                </div>
+            </>
+        );
+    }
+    
+    const FailedMessage = (props) => {
+        return (
+            <>
+                <div className='alert alert-danger alert-dismissible'>
+                    <button type='button' className='btn-close' data-bs-dismiss='alert'></button>
+                    Something went wrong!
+                </div>
+            </>
+        );
+    }
+
     return (
         <div className='container my-3 p-3'>
             <h3>Task Tracker Records</h3>
+            { (taskMessage === true ) ? <SuccessMessage /> : <FailedMessage />}
             <div className='justify-content-center'>
-                <form className='w-100'>
+                <form className='w-100' id='taskForm'>
                     <div className='mb-3'>
                         <label htmlFor='taskName' className='form-label'>Task</label>
-                        <input type='text' className='form-control' id='taskName' name='taskName' />
+                        <input type='text' className='form-control' id='taskName' name='userName' />
                     </div>
                     <div className='mb-3'>
                         <label htmlFor='duration' className='form-label'>Duration in minutes</label>

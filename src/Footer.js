@@ -18,6 +18,7 @@ const Footer = () => {
                 <p className='text-center text-muted'>&copy; 2022 cosmaj</p>
             </footer>
         </div>
+        
     );
 }
 
