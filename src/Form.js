@@ -1,44 +1,102 @@
 import React, { useState } from "react";
+import axios from 'axios';
 
 const Form = () => {
 
     const [taskName, setTaskName] = useState('')
     const [duration, setDuration] = useState('')
     const [completion, setCompletion] = useState(false)
+    const [taskNameError, settaskNameError] = useState(false)
+    const [durationError, setDurationError] = useState(false)
+    const [taskCreateStatus, setTaskCreationStatus] = useState(0)
 
+    const formReset = ()=>{
+        setTaskName('')
+        setDuration('')
+        setCompletion(false)
+        settaskNameError(false)
+        setDurationError(false)
+        setTaskCreationStatus(0)
+    }
+
+    const handleChangingTaskName = (e)=>{
+        settaskNameError(false)
+        setTaskName(e.target.value)
+    }
+
+    const handleChangingDuration = (e)=>{
+        setDurationError(false)
+        setDuration(e.target.value.trim())
+    }
 
     const handleFormSubmit = (e)=>{
         e.preventDefault();
-        console.log(taskName, duration, completion)
+        if (taskName.length < 3) settaskNameError(true)
+        if (isNaN(duration) || (duration <= 0) || (duration.length < 1)) setDurationError(true)
+        if (taskNameError === false && durationError === false) createNewTask()
+    }
+
+    const createNewTask = async()=>{
+        let newTask = {
+            "description": taskName.trim(),
+            "duration": parseInt(duration),
+            "completed": completion
+        }
+        
+        try {
+            let task = await axios.post('http://localhost:8000/api/v1/tasks', newTask)
+            setTaskCreationStatus(1)
+            setTimeout(()=>formReset(), 2000)
+        } catch (error) {
+            setTimeout(()=>formReset(), 5000)
+            console.log(error)
+            setTaskCreationStatus(error)
+        }
+    }
+
+    const TaskCreationMessage = (props)=>{
+        return (
+                <div className='alert alert-success alert-dismissible'>
+                    <button type='button' className='btn-close' data-bs-dismiss='alert'></button>
+                    { props.msg }
+                </div>
+        );
+    }
+
+    const TaskCreationErrorMessage = (props)=>{
+        return (
+                <div className='alert alert-danger alert-dismissible'>
+                    <button type='button' className='btn-close' data-bs-dismiss='alert'></button>
+                    { props.msg }
+                </div>
+        );
     }
 
     return(
         <div className='container my-3 p-3'>
             <h3>Task Tracker Records</h3>
+            { taskCreateStatus===1 ?  <TaskCreationMessage msg="Task Created Successfull!" /> : ''}
+            { (taskCreateStatus!==-1 && taskCreateStatus!==1) ?  <TaskCreationErrorMessage msg="Something went wrong" /> : ''}
             <div className='justify-content-center'>
                 <form className='w-100' id='taskForm' onSubmit={ handleFormSubmit }>
                     <div className='mb-3'>
                         <label htmlFor='taskName' className='form-label'>Task</label>
-                        <input type='text' className='form-control' name='taskName' value={ taskName } onChange={ (e)=> setTaskName(e.target.value) }/>
+                        <input type='text' className='form-control' name='taskName' value={ taskName } onChange={ (e)=> handleChangingTaskName(e) }/>
+                        { taskNameError ? <small className="text-danger">Task Name should be 3+ alphanumeric</small>: '' }
                     </div>
                     <div className='mb-3'>
                         <label htmlFor='duration' className='form-label'>Duration in minutes</label>
-                        <input type='number' className='form-control' name='duration' value={ duration } onChange={ (e)=> setDuration(e.target.value) } />
+                        <input type='number' className='form-control' name='duration' value={ duration } onChange={ (e)=> handleChangingDuration(e) } />
+                        { durationError ? <small className="text-danger">Task duration should be greter than 0</small> : '' }
                     </div>
                     <div className='form-check form-switch mb-3'>
                         <label htmlFor='completion' className='form-check-label'>Task completed?</label>
                         <input type='checkbox' className='form-check-input' name='completion' value={ completion } role='switch' onChange={ (e)=> setCompletion(e.target.checked ? true: false) }/>
                     </div>
                     <div className='mb-3'>
-                        <input type='reset' className='btn btn-danger m-2' value='Reset' />
+                        <input type='reset' className='btn btn-danger m-2' onClick={ formReset } value='Reset' />
                         <button type='submit' className='btn btn-primary m-2' >Save</button>
-                        <button type='button' className='btn btn-success m-2' >Delete</button>
                     </div>
-                    <p>
-                        Task: { taskName } <br />
-                        Duration: { duration } <br />
-                        Completion: { completion }
-                    </p>
                 </form>
             </div>
         </div>

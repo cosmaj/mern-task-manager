@@ -1,7 +1,6 @@
 import React from 'react';
 import Header from './Header';
 import Footer from './Footer';
-// import CreateTask from './CreateTask';
 import Form from './Form';
 
 function App() {
@@ -9,7 +8,6 @@ function App() {
     <>
       <Header />
       <Form />
-      {/* <CreateTask /> */}
       <Footer />
     </>
   );
