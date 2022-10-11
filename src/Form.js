@@ -48,18 +48,17 @@ const Form = () => {
             setTaskCreationStatus(1)
             setTimeout(()=>formReset(), 2000)
         } catch (error) {
-            console.log(error)
-            setTimeout(()=>formReset(), 5000)
-            console.log(error)
-            setTaskCreationStatus(error)
+            console.log(`Error Info: ${ error }`)
+            setTaskCreationStatus(-1)
+            setTimeout(()=>formReset(), 2000)
         }
     }
 
     return(
         <div className='container my-3 p-3'>
             <h3>Task Tracker Records</h3>
-            { taskCreateStatus===1 ?  <Alert color="success" msg="Task Created Successfull!" /> : ''}
-            { (taskCreateStatus===-1) ?  <Alert color="danger" msg="Something went wrong" /> : ''}
+            { taskCreateStatus===1 ?  <Alert color="success" msg="Task Created Successfull!" /> : '' }
+            { taskCreateStatus===-1 ?  <Alert color="danger" msg="Something went wrong" /> : '' }
             <div className='justify-content-center'>
                 <form className='w-100' id='taskForm' onSubmit={ handleFormSubmit }>
                     <div className='mb-3'>
@@ -80,7 +79,7 @@ const Form = () => {
                         <input type='reset' className='btn btn-danger m-2' onClick={ formReset } value='Reset' />
                         <button type='submit' className='btn btn-primary m-2' >Save</button>
                     </div>
-                    <p>{taskCreateStatus}</p>
+                    <p>{ taskCreateStatus }</p>
                 </form>
             </div>
         </div>
