@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Alert from "./Alert";
 import axios from 'axios';
 
 const Form = () => {
@@ -20,19 +21,19 @@ const Form = () => {
     }
 
     const handleChangingTaskName = (e)=>{
-        settaskNameError(false)
+        if (taskNameError === true) settaskNameError(false)
         setTaskName(e.target.value)
     }
 
     const handleChangingDuration = (e)=>{
-        setDurationError(false)
+        if (durationError === true) setDurationError(false)
         setDuration(e.target.value.trim())
     }
 
     const handleFormSubmit = (e)=>{
         e.preventDefault();
         if (taskName.length < 3) settaskNameError(true)
-        if (isNaN(duration) || (duration <= 0) || (duration.length < 1)) setDurationError(true)
+        if (isNaN(duration) || (duration <= 0)) setDurationError(true)
         if (taskNameError === false && durationError === false) createNewTask()
     }
 
@@ -42,41 +43,23 @@ const Form = () => {
             "duration": parseInt(duration),
             "completed": completion
         }
-        
         try {
             let task = await axios.post('http://localhost:8000/api/v1/tasks', newTask)
             setTaskCreationStatus(1)
             setTimeout(()=>formReset(), 2000)
         } catch (error) {
+            console.log(error)
             setTimeout(()=>formReset(), 5000)
             console.log(error)
             setTaskCreationStatus(error)
         }
     }
 
-    const TaskCreationMessage = (props)=>{
-        return (
-                <div className='alert alert-success alert-dismissible'>
-                    <button type='button' className='btn-close' data-bs-dismiss='alert'></button>
-                    { props.msg }
-                </div>
-        );
-    }
-
-    const TaskCreationErrorMessage = (props)=>{
-        return (
-                <div className='alert alert-danger alert-dismissible'>
-                    <button type='button' className='btn-close' data-bs-dismiss='alert'></button>
-                    { props.msg }
-                </div>
-        );
-    }
-
     return(
         <div className='container my-3 p-3'>
             <h3>Task Tracker Records</h3>
-            { taskCreateStatus===1 ?  <TaskCreationMessage msg="Task Created Successfull!" /> : ''}
-            { (taskCreateStatus!==-1 && taskCreateStatus!==1) ?  <TaskCreationErrorMessage msg="Something went wrong" /> : ''}
+            { taskCreateStatus===1 ?  <Alert color="success" msg="Task Created Successfull!" /> : ''}
+            { (taskCreateStatus===-1) ?  <Alert color="danger" msg="Something went wrong" /> : ''}
             <div className='justify-content-center'>
                 <form className='w-100' id='taskForm' onSubmit={ handleFormSubmit }>
                     <div className='mb-3'>
@@ -97,6 +80,7 @@ const Form = () => {
                         <input type='reset' className='btn btn-danger m-2' onClick={ formReset } value='Reset' />
                         <button type='submit' className='btn btn-primary m-2' >Save</button>
                     </div>
+                    <p>{taskCreateStatus}</p>
                 </form>
             </div>
         </div>

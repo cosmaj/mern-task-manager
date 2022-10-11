@@ -22,7 +22,6 @@ const getAllTasks = async (req, res) => {
 }
 
 const createTask = async (req, res) => {
-    //console.log(req.body)
     try {
         let task = req.body
         await Task.create(task)
