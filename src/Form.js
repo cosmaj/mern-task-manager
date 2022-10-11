@@ -57,19 +57,19 @@ const Form = () => {
     return(
         <div className='container my-3 p-3'>
             <h3>Task Tracker Records</h3>
-            { taskCreateStatus===1 ?  <Alert color="success" msg="Task Created Successfull!" /> : '' }
-            { taskCreateStatus===-1 ?  <Alert color="danger" msg="Something went wrong" /> : '' }
+            { (taskCreateStatus === 1) &&  <Alert color="success" msg="Task Created Successfull!" />  }
+            { (taskCreateStatus === -1) && <Alert color="danger" msg="Something went wrong" /> }
             <div className='justify-content-center'>
                 <form className='w-100' id='taskForm' onSubmit={ handleFormSubmit }>
                     <div className='mb-3'>
                         <label htmlFor='taskName' className='form-label'>Task</label>
                         <input type='text' className='form-control' name='taskName' value={ taskName } onChange={ (e)=> handleChangingTaskName(e) }/>
-                        { taskNameError ? <small className="text-danger">Task Name should be 3+ alphanumeric</small>: '' }
+                        { taskNameError && <small className="text-danger">Task Name should be 3+ alphanumeric</small> }
                     </div>
                     <div className='mb-3'>
                         <label htmlFor='duration' className='form-label'>Duration in minutes</label>
                         <input type='number' className='form-control' name='duration' value={ duration } onChange={ (e)=> handleChangingDuration(e) } />
-                        { durationError ? <small className="text-danger">Task duration should be greter than 0</small> : '' }
+                        { durationError && <small className="text-danger">Task duration should be greter than 0</small> }
                     </div>
                     <div className='form-check form-switch mb-3'>
                         <label htmlFor='completion' className='form-check-label'>Task completed?</label>
@@ -79,7 +79,6 @@ const Form = () => {
                         <input type='reset' className='btn btn-danger m-2' onClick={ formReset } value='Reset' />
                         <button type='submit' className='btn btn-primary m-2' >Save</button>
                     </div>
-                    <p>{ taskCreateStatus }</p>
                 </form>
             </div>
         </div>
