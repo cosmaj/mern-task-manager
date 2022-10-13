@@ -1,9 +1,11 @@
 const express = require('express')
+const cors = require('cors')
 const connection = require('./database/dbconnection')
 const taskRoutes = require('./routes/tasks')
 require('dotenv').config()
 const app = express()
 
+app.use(cors())
 app.use(express.json())
 app.use('/api/v1/tasks', taskRoutes)
 const PORT = process.env.PORT || 8080

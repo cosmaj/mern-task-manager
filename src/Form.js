@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Alert from "./Alert";
 import axios from 'axios';
-import Spinner from "./Spinner";
 
 const Form = () => {
 
@@ -11,7 +10,7 @@ const Form = () => {
     const [taskNameError, settaskNameError] = useState(false)
     const [durationError, setDurationError] = useState(false)
     const [taskCreateStatus, setTaskCreationStatus] = useState(0)
-    const [loaderSpiner, setLoaderSpinner] = useState(false)
+    //const [loaderSpiner, setLoaderSpinner] = useState(false)
 
     const formReset = ()=>{
         setTaskName('')
