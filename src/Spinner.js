@@ -1,9 +1,12 @@
 import React from "react";
-import './Spinner.css'
 
 const Spinner = ()=>{
     return (
-        <div className="loader">Loading...</div>
+        <div class="text-center">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
     );
 }
 
