@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Spinner from "./Spinner";
 import Alert from "./Alert";
 import axios from 'axios';
@@ -11,7 +11,8 @@ const Form = () => {
     const [taskNameError, settaskNameError] = useState(false)
     const [durationError, setDurationError] = useState(false)
     const [taskCreateStatus, setTaskCreationStatus] = useState(0)
-    const [loaderSpiner, setLoaderSpinner] = useState(null)
+    const [loaderSpiner, setLoaderSpinner] = useState(false)
+    const [taskCreationMessage, setTaskCreationMessage] = useState(null)
 
     const formReset = ()=>{
         setTaskName('')
@@ -39,7 +40,7 @@ const Form = () => {
         if (taskNameError === false && durationError === false) createNewTask()
     }
 
-    const createNewTask = ()=>{
+    const createNewTask = async()=>{
         let newTask = {
             "description": taskName.trim(),
             "duration": parseInt(duration),
@@ -47,33 +48,27 @@ const Form = () => {
         }
         try {
             setLoaderSpinner(true)
-            useEffect(()=>{
-                let savingResponse = saveTask(newTask)
-                console.log(savingResponse) //Testing
-                setLoaderSpinner(null)
-                setTaskCreationStatus(1)
-                setTimeout(()=>formReset(), 2000)
-            },[])
-            // let task = await axios.post('http://localhost:8000/api/v1/tasks', newTask)
-            // setTaskCreationStatus(1)
-            // setTimeout(()=>formReset(), 2000)
+            let response = await axios.post('http://localhost:8000/api/v1/tasks', newTask)
+            setTaskCreationStatus(1)
+            setTimeout(()=>formReset(), 2000)
+            setLoaderSpinner(false)
+            setTaskCreationMessage(response.data)
+            
         } catch (error) {
-            console.log(`Error Info: ${ error }`)
+            setLoaderSpinner(false)
+            setTaskCreationMessage('Something went wrong')
+            console.log(`${ error }`)
             setTaskCreationStatus(-1)
             setTimeout(()=>formReset(), 2000)
         }
-    }
-    // Testing
-    const saveTask = async(task)=>{
-        let savedTask = await axios.post('http://localhost:8000/api/v1/tasks', task)
-        return savedTask
     }
 
     return(
         <div className='container my-3 p-3'>
             <h3>Task Tracker Records</h3>
-            { (taskCreateStatus === 1) &&  <Alert color="success" msg="Task Created Successfull!" />  }
-            { (taskCreateStatus === -1) && <Alert color="danger" msg="Something went wrong" /> }
+            { loaderSpiner && <Spinner /> }
+            { (taskCreateStatus === 1) &&  <Alert color="success" msg={ taskCreationMessage } />  }
+            { (taskCreateStatus === -1) && <Alert color="danger" msg={ taskCreationMessage } /> }
             <div className='justify-content-center'>
                 <form className='w-100' id='taskForm' onSubmit={ handleFormSubmit }>
                     <div className='mb-3'>
@@ -95,9 +90,6 @@ const Form = () => {
                         <button type='submit' className='btn btn-primary m-2' >Save</button>
                     </div>
                 </form>
-                <p>
-                    { loaderSpiner ? 'Some data' : 'Loading....' }
-                </p>
             </div>
         </div>
     );
